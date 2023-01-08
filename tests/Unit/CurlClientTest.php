@@ -6,9 +6,8 @@ namespace Tests\Unit;
 use Codeception\Test\Unit;
 use Codeception\Util\HttpCode;
 use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Uri;
 use S3bul\Client\CurlClient;
-use S3bul\Util\HttpMethod;
+use S3bul\Factory\RequestFactory;
 use Tests\Support\UnitTester;
 
 class CurlClientTest extends Unit
@@ -23,7 +22,7 @@ class CurlClientTest extends Unit
 
     public function testWhenCreateClientExpectProperlyTypesAndValues(): void
     {
-        $request = new Request(HttpMethod::GET, self::SERVICE_URI);
+        $request = RequestFactory::get(self::SERVICE_URI);
         $curl = new CurlClient($request, [CURLOPT_SSL_VERIFYHOST => 2, CURLOPT_RETURNTRANSFER => false]);
         $curl->addOption(CURLOPT_SSL_VERIFYPEER, true)
             ->addOptions([CURLOPT_HEADER => ['Content-Type: text']]);
@@ -41,17 +40,17 @@ class CurlClientTest extends Unit
 
     public function testWhenGetNotExistsUsersExpectHttpCodeIsNotFound(): void
     {
-        $request = new Request(HttpMethod::GET, self::SERVICE_URI . '/0');
+        $request = RequestFactory::get(self::SERVICE_URI . '/0');
         $curl = new CurlClient($request);
-        $response = $curl->curlExec();
+        $response = $curl->exec();
         $this->tester->assertEquals(HttpCode::NOT_FOUND, $response->getStatusCode());
     }
 
     public function testWhenGetUsersExpectJsonStructure(): void
     {
-        $request = new Request(HttpMethod::GET, self::SERVICE_URI);
+        $request = RequestFactory::get(self::SERVICE_URI);
         $curl = new CurlClient($request);
-        $response = $curl->curlExec();
+        $response = $curl->exec();
         $json = $response->getBody()->getContents();
 
         $this->tester->assertJson($json);
@@ -61,14 +60,12 @@ class CurlClientTest extends Unit
 
     public function testWhenGetUsersWithFilterExpectJsonStructureAndOneElement(): void
     {
-        $request = new Request(HttpMethod::GET, Uri::withQueryValues(
-            new Uri(self::SERVICE_URI), [
-                'page' => '1',
-                'per_page' => '1',
-            ]
-        ));
+        $request = RequestFactory::get(self::SERVICE_URI, [
+            'page' => 1,
+            'per_page' => 1,
+        ]);
         $curl = new CurlClient($request);
-        $response = $curl->curlExec();
+        $response = $curl->exec();
         $json = $response->getBody()->getContents();
         $this->tester->assertJson($json);
         $decoded = json_decode($json);
@@ -79,17 +76,17 @@ class CurlClientTest extends Unit
     private function whenCreateUserExpectEmailAsTheSame(): int
     {
         $email = uniqid('curl_') . '@curl.pl';
-        $request = new Request(HttpMethod::POST, self::SERVICE_URI, [
-            'Authorization' => 'Bearer ' . getenv('TEST_API_TOKEN'),
-//            'Content-Type' => 'application/json',
-        ], http_build_query([
+        $request = RequestFactory::post(self::SERVICE_URI, [
             'email' => $email,
             'name' => 'Curl Client',
             'gender' => 'male',
             'status' => 'active',
-        ]));
+        ], [
+            'Authorization' => 'Bearer ' . getenv('TEST_API_TOKEN'),
+//            'Content-Type' => 'application/json',
+        ]);
         $curl = new CurlClient($request);
-        $response = $curl->curlExec();
+        $response = $curl->exec();
         $json = $response->getBody()->getContents();
 
         $this->tester->assertJson($json);
@@ -105,11 +102,11 @@ class CurlClientTest extends Unit
 
     private function whenDeleteUserExpectHttpCodeIsNoContent(int $userId): void
     {
-        $request = new Request(HttpMethod::DELETE, self::SERVICE_URI . "/$userId", [
+        $request = RequestFactory::delete(self::SERVICE_URI . "/$userId", [
             'Authorization' => 'Bearer ' . getenv('TEST_API_TOKEN'),
         ]);
         $curl = new CurlClient($request);
-        $response = $curl->curlExec();
+        $response = $curl->exec();
 
         $this->tester->assertEquals(HttpCode::NO_CONTENT, $response->getStatusCode());
     }

@@ -93,7 +93,7 @@ class CurlClient
         return $result;
     }
 
-    private function curlInit(): void
+    private function init(): void
     {
         $this->handle = curl_init();
         $_options = [
@@ -126,9 +126,9 @@ class CurlClient
         return $result;
     }
 
-    public function curlExec(): ResponseInterface
+    public function exec(): ResponseInterface
     {
-        $this->curlInit();
+        $this->init();
 
         $result = $header = $body = curl_exec($this->handle);
 
