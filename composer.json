@@ -1,13 +1,14 @@
 {
-    "name": "s3bul/curl-client",
-    "description": "Curl client for PHP",
+    "name": "s3bul/curl-psr7",
+    "description": "Curl client with PSR-7 for PHP",
     "version": "0.1.0",
     "keywords": [
         "PHP",
-        "cURL"
+        "cURL",
+        "PSR-7"
     ],
     "minimum-stability": "stable",
-    "homepage": "https://github.com/s3bul/curl-client",
+    "homepage": "https://github.com/s3bul/curl-psr7",
     "license": "MIT",
     "type": "library",
     "authors": [
@@ -17,6 +18,7 @@
         }
     ],
     "require": {
+        "php": "^8.2",
         "ext-curl": "*",
         "guzzlehttp/psr7": "^2.4"
     },
