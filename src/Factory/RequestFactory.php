@@ -1,11 +1,12 @@
 <?php
+declare(strict_types=1);
 
-namespace S3bul\Factory;
+namespace S3bul\CurlPsr7\Factory;
 
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
 use Psr\Http\Message\RequestInterface;
-use S3bul\Util\HttpMethod;
+use S3bul\CurlPsr7\Util\HttpMethod;
 
 class RequestFactory
 {

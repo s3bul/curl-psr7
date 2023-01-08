@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace S3bul\Client;
+namespace S3bul\CurlPsr7\Client;
 
 use CurlHandle;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use S3bul\Exception\CurlExecException;
+use S3bul\CurlPsr7\Exception\CurlExecException;
 
 class CurlClient
 {

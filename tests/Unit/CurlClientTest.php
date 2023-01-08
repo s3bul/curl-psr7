@@ -6,8 +6,8 @@ namespace Tests\Unit;
 use Codeception\Test\Unit;
 use Codeception\Util\HttpCode;
 use GuzzleHttp\Psr7\Request;
-use S3bul\Client\CurlClient;
-use S3bul\Factory\RequestFactory;
+use S3bul\CurlPsr7\Client\CurlClient;
+use S3bul\CurlPsr7\Factory\RequestFactory;
 use Tests\Support\UnitTester;
 
 class CurlClientTest extends Unit

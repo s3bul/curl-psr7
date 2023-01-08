@@ -1,48 +1,48 @@
 {
-    "name": "s3bul/curl-psr7",
-    "description": "Curl client with PSR-7 for PHP",
-    "version": "0.1.0",
-    "keywords": [
-        "PHP",
-        "cURL",
-        "PSR-7"
-    ],
-    "minimum-stability": "stable",
-    "homepage": "https://github.com/s3bul/curl-psr7",
-    "license": "MIT",
-    "type": "library",
-    "authors": [
-        {
-            "name": "Sebastian Korzeniecki",
-            "email": "seba5zer@gmail.com"
-        }
-    ],
-    "require": {
-        "php": "^8.2",
-        "ext-curl": "*",
-        "guzzlehttp/psr7": "^2.4"
-    },
-    "require-dev": {
-        "codeception/codeception": "^5.0",
-        "codeception/module-asserts": "*",
-        "codeception/module-phpbrowser": "*"
-    },
-    "config": {
-        "sort-packages": true
-    },
-    "autoload": {
-        "psr-4": {
-            "S3bul\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Tests\\": "tests/"
-        }
-    },
-    "scripts": {
-        "safe-update": [
-            "composer update --no-interaction --no-ansi --ignore-platform-reqs"
-        ]
+  "name": "s3bul/curl-psr7",
+  "description": "Curl client with PSR-7 for PHP",
+  "version": "0.1.0",
+  "keywords": [
+    "PHP",
+    "cURL",
+    "PSR-7"
+  ],
+  "minimum-stability": "stable",
+  "homepage": "https://github.com/s3bul/curl-psr7",
+  "license": "MIT",
+  "type": "library",
+  "authors": [
+    {
+      "name": "Sebastian Korzeniecki",
+      "email": "seba5zer@gmail.com"
     }
+  ],
+  "require": {
+    "php": "^8.2",
+    "ext-curl": "*",
+    "guzzlehttp/psr7": "^2.4"
+  },
+  "require-dev": {
+    "codeception/codeception": "^5.0",
+    "codeception/module-asserts": "*",
+    "codeception/module-phpbrowser": "*"
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "autoload": {
+    "psr-4": {
+      "S3bul\\CurlPsr7\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "safe-update": [
+      "composer update --no-interaction --no-ansi --ignore-platform-reqs"
+    ]
+  }
 }

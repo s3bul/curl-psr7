@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace S3bul\Util;
+namespace S3bul\CurlPsr7\Util;
 
 class HttpMethod
 {
