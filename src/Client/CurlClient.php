@@ -19,7 +19,8 @@ class CurlClient
     private ?CurlHandle $handle = null;
 
     public function __construct(
-        public array $options = [],
+        public RequestInterface $request,
+        public array            $options = [],
     )
     {
         $this->options = $options + self::DEFAULT_OPTIONS;
@@ -80,31 +81,30 @@ class CurlClient
         return curl_setopt($this->handle, $option, $value);
     }
 
-    private function convertHeaderToCurlOpt(RequestInterface $request): array
+    private function convertHeaderToCurlOpt(): array
     {
         $result = [];
 
-        foreach ($request->getHeaders() as $header => $value) {
-            $headerLine = $request->getHeaderLine($header);
+        foreach ($this->request->getHeaders() as $header => $value) {
+            $headerLine = $this->request->getHeaderLine($header);
             $result[] = "$header: $headerLine";
         }
 
         return $result;
     }
 
-    private function init(RequestInterface $request, array $options = []): void
+    private function curlInit(): void
     {
         $this->handle = curl_init();
-        $this->addOptions($options);
         $_options = [
-            CURLOPT_URL => strval($request->getUri()),
-            CURLOPT_CUSTOMREQUEST => $request->getMethod(),
-            CURLOPT_HTTPHEADER => $this->convertHeaderToCurlOpt($request),
+            CURLOPT_URL => strval($this->request->getUri()),
+            CURLOPT_CUSTOMREQUEST => $this->request->getMethod(),
+            CURLOPT_HTTPHEADER => $this->convertHeaderToCurlOpt(),
         ];
 
-        if ($request->getBody()->getSize() > 0) {
+        if ($this->request->getBody()->getSize() > 0) {
             $_options[CURLOPT_POST] = true;
-            $_options[CURLOPT_POSTFIELDS] = $request->getBody()->getContents();
+            $_options[CURLOPT_POSTFIELDS] = $this->request->getBody()->getContents();
         }
 
         curl_setopt_array($this->handle, $_options + $this->options);
@@ -126,9 +126,9 @@ class CurlClient
         return $result;
     }
 
-    private function curlExec(RequestInterface $request, array $options = []): ResponseInterface
+    public function curlExec(): ResponseInterface
     {
-        $this->init($request, $options);
+        $this->curlInit();
 
         $result = $header = $body = curl_exec($this->handle);
 
@@ -147,21 +147,6 @@ class CurlClient
             $this->getOption(CURLOPT_HEADER) ? $this->convertHeaderToArray($header) : [],
             $body,
         );
-    }
-
-    public function get(RequestInterface $request, array $options = []): ResponseInterface
-    {
-        return $this->curlExec($request, $options);
-    }
-
-    public function post(RequestInterface $request, array $options = []): ResponseInterface
-    {
-        return $this->curlExec($request, $options);
-    }
-
-    public function delete(RequestInterface $request, array $options = []): ResponseInterface
-    {
-        return $this->curlExec($request, $options);
     }
 
 }
