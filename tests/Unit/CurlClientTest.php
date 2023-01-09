@@ -17,7 +17,7 @@ class CurlClientTest extends Unit
 
     protected UnitTester $tester;
 
-    protected function _before()
+    protected function _before(): void
     {
     }
 

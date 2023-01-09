@@ -13,7 +13,7 @@ class RequestFactory extends MessageFactory
     /**
      * @param string $method
      * @param string $uri
-     * @param array<string, string|null>|null $data
+     * @param array<string, string|int|null>|null $data
      * @param mixed|null $body
      * @param array<string, string>|null $headers
      * @param string|null $version
@@ -40,7 +40,7 @@ class RequestFactory extends MessageFactory
 
     /**
      * @param string $uri
-     * @param array<string, string|null> $data
+     * @param array<string, string|int|null> $data
      * @param array<string, string> $headers
      * @return RequestInterface
      */
@@ -58,6 +58,28 @@ class RequestFactory extends MessageFactory
     public static function post(string $uri, mixed $body = null, array $headers = []): RequestInterface
     {
         return self::create(HttpMethod::POST, $uri, [], $body, $headers);
+    }
+
+    /**
+     * @param string $uri
+     * @param mixed|null $body
+     * @param array<string, string> $headers
+     * @return RequestInterface
+     */
+    public static function put(string $uri, mixed $body = null, array $headers = []): RequestInterface
+    {
+        return self::create(HttpMethod::PUT, $uri, [], $body, $headers);
+    }
+
+    /**
+     * @param string $uri
+     * @param mixed|null $body
+     * @param array<string, string> $headers
+     * @return RequestInterface
+     */
+    public static function patch(string $uri, mixed $body = null, array $headers = []): RequestInterface
+    {
+        return self::create(HttpMethod::PATCH, $uri, [], $body, $headers);
     }
 
     /**

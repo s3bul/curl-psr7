@@ -21,7 +21,7 @@ class CurlFactory
 
     /**
      * @param string $uri
-     * @param array<string, string|null>|null $data
+     * @param array<string, string|int|null>|null $data
      * @param array<string, string>|null $headers
      * @param array<int, mixed> $options
      * @return CurlClient
@@ -42,6 +42,32 @@ class CurlFactory
     public static function post(string $uri, mixed $body = null, ?array $headers = [], array $options = []): CurlClient
     {
         $request = RequestFactory::post($uri, $body, $headers ?? []);
+        return self::create($request, $options);
+    }
+
+    /**
+     * @param string $uri
+     * @param mixed|null $body
+     * @param array<string, string>|null $headers
+     * @param array<int, mixed> $options
+     * @return CurlClient
+     */
+    public static function put(string $uri, mixed $body = null, ?array $headers = [], array $options = []): CurlClient
+    {
+        $request = RequestFactory::put($uri, $body, $headers ?? []);
+        return self::create($request, $options);
+    }
+
+    /**
+     * @param string $uri
+     * @param mixed|null $body
+     * @param array<string, string>|null $headers
+     * @param array<int, mixed> $options
+     * @return CurlClient
+     */
+    public static function patch(string $uri, mixed $body = null, ?array $headers = [], array $options = []): CurlClient
+    {
+        $request = RequestFactory::patch($uri, $body, $headers ?? []);
         return self::create($request, $options);
     }
 
