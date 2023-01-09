@@ -26,11 +26,13 @@ class CurlClientTest extends Unit
         $curl = CurlFactory::get(self::SERVICE_URI, null, null, [CURLOPT_SSL_VERIFYHOST => 2, CURLOPT_RETURNTRANSFER => false]);
         $curl->addOption(CURLOPT_SSL_VERIFYPEER, true)
             ->addOptions([CURLOPT_SSLVERSION => 3])
+            ->addHeader('Content-Type', 'text/html')
             ->exec();
 
         $this->tester->assertInstanceOf(Request::class, $curl->request);
         $this->tester->assertInstanceOf(CurlHandle::class, $curl->getHandle());
         $this->tester->assertEquals(self::SERVICE_URI, strval($curl->request->getUri()));
+        $this->tester->assertEquals('text/html', $curl->request->getHeaderLine('Content-Type'));
         $this->tester->assertArrayHasKey(CURLOPT_SSL_VERIFYHOST, $curl->options);
         $this->tester->assertArrayHasKey(CURLOPT_RETURNTRANSFER, $curl->options);
         $this->tester->assertArrayHasKey(CURLOPT_SSL_VERIFYPEER, $curl->options);
