@@ -219,9 +219,9 @@ class CurlClient
         $headers = explode("\r\n", $header);
         foreach ($headers as $row) {
             if (preg_match('/^\S+:/', $row) === 1) {
-                $strpos = strpos($row, ':');
-                $name = substr($row, 0, $strpos);
-                $value = substr($row, $strpos + 1);
+                $strPos = strpos($row, ':');
+                $name = substr($row, 0, $strPos);
+                $value = substr($row, $strPos + 1);
                 $result[$name] = $value;
             }
         }
