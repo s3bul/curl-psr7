@@ -25,7 +25,7 @@ class CurlClientTest extends Unit
     {
         $curl = CurlFactory::get(self::SERVICE_URI, null, null, [CURLOPT_SSL_VERIFYHOST => 2, CURLOPT_RETURNTRANSFER => false]);
         $curl->addOption(CURLOPT_SSL_VERIFYPEER, true)
-            ->addOptions([CURLOPT_HTTPHEADER => ['Content-Type: text']])
+            ->addOptions([CURLOPT_SSLVERSION => 3])
             ->exec();
 
         $this->tester->assertInstanceOf(Request::class, $curl->request);
@@ -34,11 +34,11 @@ class CurlClientTest extends Unit
         $this->tester->assertArrayHasKey(CURLOPT_SSL_VERIFYHOST, $curl->options);
         $this->tester->assertArrayHasKey(CURLOPT_RETURNTRANSFER, $curl->options);
         $this->tester->assertArrayHasKey(CURLOPT_SSL_VERIFYPEER, $curl->options);
-        $this->tester->assertArrayHasKey(CURLOPT_HTTPHEADER, $curl->options);
+        $this->tester->assertArrayHasKey(CURLOPT_SSLVERSION, $curl->options);
         $this->tester->assertEquals(2, $curl->getOption(CURLOPT_SSL_VERIFYHOST));
         $this->tester->assertEquals(false, $curl->getOption(CURLOPT_RETURNTRANSFER));
         $this->tester->assertEquals(true, $curl->getOption(CURLOPT_SSL_VERIFYPEER));
-        $this->tester->assertEquals(['Content-Type: text'], $curl->getOption(CURLOPT_HTTPHEADER));
+        $this->tester->assertEquals(3, $curl->getOption(CURLOPT_SSLVERSION));
     }
 
     public function testWhenSendRequestToWrongHostExpectThrowCurlException(): void
