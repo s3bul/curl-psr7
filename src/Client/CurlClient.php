@@ -141,16 +141,6 @@ class CurlClient
     }
 
     /**
-     * @param int $option
-     * @param mixed $value
-     * @return bool
-     */
-    private function setCurlOption(int $option, mixed $value): bool
-    {
-        return curl_setopt($this->handle, $option, $value);
-    }
-
-    /**
      * @return string[]
      */
     private function convertHeaderToCurlOpt(): array
