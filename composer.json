@@ -1,7 +1,7 @@
 {
   "name": "s3bul/curl-psr7",
   "description": "Curl client with PSR-7 for PHP",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "keywords": [
     "PHP",
     "cURL",

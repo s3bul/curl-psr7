@@ -4,10 +4,10 @@ declare(strict_types=1);
 namespace S3bul\CurlPsr7\Client;
 
 use CurlHandle;
-use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use S3bul\CurlPsr7\Exception\CurlExecException;
+use S3bul\CurlPsr7\Factory\ResponseFactory;
 
 class CurlClient
 {
@@ -76,6 +76,11 @@ class CurlClient
         return $this->getCurlInfo(CURLINFO_HTTP_CODE);
     }
 
+    private function getCurlInfoHttpVersion(): int
+    {
+        return $this->getCurlInfo(CURLINFO_HTTP_VERSION);
+    }
+
     private function setCurlOption(int $option, mixed $value): bool
     {
         return curl_setopt($this->handle, $option, $value);
@@ -96,18 +101,19 @@ class CurlClient
     private function init(): void
     {
         $this->handle = curl_init();
-        $_options = [
+        $headers = $this->getOption(CURLOPT_HTTPHEADER) ?? [];
+        $options = [
             CURLOPT_URL => strval($this->request->getUri()),
             CURLOPT_CUSTOMREQUEST => $this->request->getMethod(),
-            CURLOPT_HTTPHEADER => $this->convertHeaderToCurlOpt(),
+            CURLOPT_HTTPHEADER => array_merge($this->convertHeaderToCurlOpt(), is_array($headers) ? $headers : [$headers]),
         ];
 
         if ($this->request->getBody()->getSize() > 0) {
-            $_options[CURLOPT_POST] = true;
-            $_options[CURLOPT_POSTFIELDS] = $this->request->getBody()->getContents();
+            $options[CURLOPT_POST] = true;
+            $options[CURLOPT_POSTFIELDS] = $this->request->getBody()->getContents();
         }
 
-        curl_setopt_array($this->handle, $_options + $this->options);
+        curl_setopt_array($this->handle, $options + $this->options);
     }
 
     private function convertHeaderToArray(string $header): array
@@ -136,16 +142,18 @@ class CurlClient
         if ($errno !== 0) {
             throw new CurlExecException(curl_error($this->handle), $errno);
         }
-        if ($this->getOption(CURLOPT_HEADER)) {
+
+        $includeHeader = ($this->getOption(CURLOPT_HEADER) ?? self::DEFAULT_OPTIONS[CURLOPT_HEADER] ?? false) && is_string($result);
+        if ($includeHeader) {
             $headerSize = $this->getCurlInfo(CURLINFO_HEADER_SIZE);
             $header = substr($result, 0, $headerSize);
             $body = substr($result, $headerSize);
         }
-
-        return new Response(
-            $this->getCurlInfoHttpCode(),
-            $this->getOption(CURLOPT_HEADER) ? $this->convertHeaderToArray($header) : [],
+        return ResponseFactory::create(
             $body,
+            $this->getCurlInfoHttpCode(),
+            $includeHeader ? $this->convertHeaderToArray($header) : [],
+            $this->getCurlInfoHttpVersion(),
         );
     }
 
