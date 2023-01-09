@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace S3bul\CurlPsr7\Util;
 
-class HttpMethod
+abstract class HttpMethod
 {
     const GET = 'GET';
     const POST = 'POST';
