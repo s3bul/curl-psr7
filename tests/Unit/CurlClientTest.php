@@ -23,7 +23,14 @@ class CurlClientTest extends Unit
 
     public function testWhenCreateClientExpectProperlyTypesAndValues(): void
     {
-        $curl = CurlFactory::get(self::SERVICE_URI, null, null, [CURLOPT_SSL_VERIFYHOST => 2, CURLOPT_RETURNTRANSFER => false]);
+        $curl = CurlFactory::get(self::SERVICE_URI, [
+            'per_page' => 1,
+        ], [
+            'Content-Language' => 'pl-PL',
+        ], [
+            CURLOPT_SSL_VERIFYHOST => 2,
+            CURLOPT_RETURNTRANSFER => false
+        ]);
         $curl->addOption(CURLOPT_SSL_VERIFYPEER, true)
             ->addOptions([CURLOPT_SSLVERSION => 3])
             ->addHeader('Content-Type', 'text/html')
@@ -31,7 +38,9 @@ class CurlClientTest extends Unit
 
         $this->tester->assertInstanceOf(Request::class, $curl->request);
         $this->tester->assertInstanceOf(CurlHandle::class, $curl->getHandle());
-        $this->tester->assertEquals(self::SERVICE_URI, strval($curl->request->getUri()));
+        $this->tester->assertEquals(self::SERVICE_URI, strval($curl->request->getUri()->withQuery('')));
+        $this->tester->assertEquals('per_page=1', $curl->request->getUri()->getQuery());
+        $this->tester->assertEquals('pl-PL', $curl->request->getHeaderLine('Content-Language'));
         $this->tester->assertEquals('text/html', $curl->request->getHeaderLine('Content-Type'));
         $this->tester->assertArrayHasKey(CURLOPT_SSL_VERIFYHOST, $curl->options);
         $this->tester->assertArrayHasKey(CURLOPT_RETURNTRANSFER, $curl->options);
