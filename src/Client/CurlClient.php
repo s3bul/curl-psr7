@@ -193,11 +193,10 @@ class CurlClient
     private function init(): void
     {
         $this->handle = curl_init();
-        $headers = $this->getOption(CURLOPT_HTTPHEADER) ?? [];
         $options = [
             CURLOPT_URL => strval($this->request->getUri()),
             CURLOPT_CUSTOMREQUEST => $this->request->getMethod(),
-            CURLOPT_HTTPHEADER => array_merge($this->convertHeaderToCurlOpt(), is_array($headers) ? $headers : [$headers]),
+            CURLOPT_HTTPHEADER => $this->convertHeaderToCurlOpt(),
         ];
 
         if ($this->request->getBody()->getSize() > 0) {
