@@ -25,7 +25,8 @@
   "require-dev": {
     "codeception/codeception": "^5.0",
     "codeception/module-asserts": "*",
-    "codeception/module-phpbrowser": "*"
+    "codeception/module-phpbrowser": "*",
+    "phpstan/phpstan": "^1.9"
   },
   "config": {
     "sort-packages": true

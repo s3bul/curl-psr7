@@ -8,6 +8,10 @@ use S3bul\CurlPsr7\Util\HttpVersion;
 
 abstract class MessageFactory
 {
+    /**
+     * @param string|int|null $version
+     * @return string
+     */
     protected static function getHttpVersion(string|int|null $version): string
     {
         switch ($version) {
