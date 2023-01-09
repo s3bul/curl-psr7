@@ -13,7 +13,7 @@ class ResponseFactory extends MessageFactory
     public static function create(
         mixed      $body = null,
         int        $status = 200,
-        ?array      $headers = [],
+        ?array     $headers = [],
         string|int $version = null,
         string     $reason = null,
     ): ResponseInterface

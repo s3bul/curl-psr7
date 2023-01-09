@@ -10,19 +10,20 @@ use S3bul\CurlPsr7\Util\HttpMethod;
 
 class RequestFactory extends MessageFactory
 {
-    private static function create(
+    public static function create(
         string $method,
         string $uri,
-        array  $data = [],
-        array  $headers = [],
+        ?array $data = [],
         mixed  $body = null,
+        ?array $headers = [],
         string $version = null,
     ): RequestInterface
     {
+        $_data = $data ?? [];
         return new Request(
             $method,
-            count($data) > 0 ? Uri::withQueryValues(new Uri($uri), $data) : $uri,
-            $headers,
+            count($_data) > 0 ? Uri::withQueryValues(new Uri($uri), $_data) : $uri,
+            $headers ?? [],
             is_array($body) ? http_build_query($body) : $body,
             self::getHttpVersion($version),
         );
@@ -30,17 +31,17 @@ class RequestFactory extends MessageFactory
 
     public static function get(string $uri, array $data = [], array $headers = []): RequestInterface
     {
-        return self::create(HttpMethod::GET, $uri, $data, $headers);
+        return self::create(HttpMethod::GET, $uri, $data, null, $headers);
     }
 
     public static function post(string $uri, mixed $body = null, array $headers = []): RequestInterface
     {
-        return self::create(HttpMethod::POST, $uri, [], $headers, $body);
+        return self::create(HttpMethod::POST, $uri, [], $body, $headers);
     }
 
     public static function delete(string $uri, array $headers = []): RequestInterface
     {
-        return self::create(HttpMethod::DELETE, $uri, [], $headers);
+        return self::create(HttpMethod::DELETE, $uri, [], null, $headers);
     }
 
 }
