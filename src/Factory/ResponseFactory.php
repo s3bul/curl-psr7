@@ -10,6 +10,14 @@ use Psr\Http\Message\ResponseInterface;
 class ResponseFactory extends MessageFactory
 {
 
+    /**
+     * @param mixed|null $body
+     * @param int $status
+     * @param array<string, string>|null $headers
+     * @param string|int|null $version
+     * @param string|null $reason
+     * @return ResponseInterface
+     */
     public static function create(
         mixed      $body = null,
         int        $status = 200,

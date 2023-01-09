@@ -20,7 +20,7 @@ class CurlClient
 
     /**
      * @param RequestInterface $request
-     * @param array $options
+     * @param array<int, mixed> $options
      */
     public function __construct(
         public RequestInterface $request,
@@ -72,7 +72,7 @@ class CurlClient
     }
 
     /**
-     * @param array $options
+     * @param array<int, mixed> $options
      * @return $this
      */
     public function addOptions(array $options): self
@@ -115,26 +115,44 @@ class CurlClient
         return $this;
     }
 
+    /**
+     * @param int|null $option
+     * @return mixed
+     */
     private function getCurlInfo(int $option = null): mixed
     {
         return curl_getinfo($this->handle, $option);
     }
 
+    /**
+     * @return int
+     */
     private function getCurlInfoHttpCode(): int
     {
         return $this->getCurlInfo(CURLINFO_HTTP_CODE);
     }
 
+    /**
+     * @return int
+     */
     private function getCurlInfoHttpVersion(): int
     {
         return $this->getCurlInfo(CURLINFO_HTTP_VERSION);
     }
 
+    /**
+     * @param int $option
+     * @param mixed $value
+     * @return bool
+     */
     private function setCurlOption(int $option, mixed $value): bool
     {
         return curl_setopt($this->handle, $option, $value);
     }
 
+    /**
+     * @return string[]
+     */
     private function convertHeaderToCurlOpt(): array
     {
         $result = [];
@@ -147,6 +165,9 @@ class CurlClient
         return $result;
     }
 
+    /**
+     * @return void
+     */
     private function init(): void
     {
         $this->handle = curl_init();
@@ -165,6 +186,10 @@ class CurlClient
         curl_setopt_array($this->handle, $options + $this->options);
     }
 
+    /**
+     * @param string $header
+     * @return array<string, string>
+     */
     private function convertHeaderToArray(string $header): array
     {
         $result = [];
@@ -172,8 +197,9 @@ class CurlClient
         $headers = explode("\r\n", $header);
         foreach ($headers as $row) {
             if (preg_match('/^\S+:/', $row) === 1) {
-                $name = substr($row, 0, strpos($row, ':'));
-                $value = substr($row, strpos($row, ':') + 1);
+                $strpos = strpos($row, ':');
+                $name = substr($row, 0, $strpos);
+                $value = substr($row, $strpos + 1);
                 $result[$name] = $value;
             }
         }
@@ -196,7 +222,7 @@ class CurlClient
             throw new CurlExecException(curl_error($this->handle), $errno);
         }
 
-        $hasHeader = ($this->getOption(CURLOPT_HEADER) ?? self::DEFAULT_OPTIONS[CURLOPT_HEADER] ?? false) && is_string($result);
+        $hasHeader = ($this->getOption(CURLOPT_HEADER) ?? self::DEFAULT_OPTIONS[CURLOPT_HEADER]) && is_string($result);
         if ($hasHeader) {
             $headerSize = $this->getCurlInfo(CURLINFO_HEADER_SIZE);
             $header = substr($result, 0, $headerSize);

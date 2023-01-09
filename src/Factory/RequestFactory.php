@@ -10,6 +10,15 @@ use S3bul\CurlPsr7\Util\HttpMethod;
 
 class RequestFactory extends MessageFactory
 {
+    /**
+     * @param string $method
+     * @param string $uri
+     * @param array<string, string|null>|null $data
+     * @param mixed|null $body
+     * @param array<string, string>|null $headers
+     * @param string|null $version
+     * @return RequestInterface
+     */
     public static function create(
         string $method,
         string $uri,
@@ -29,16 +38,33 @@ class RequestFactory extends MessageFactory
         );
     }
 
+    /**
+     * @param string $uri
+     * @param array<string, string|null> $data
+     * @param array<string, string> $headers
+     * @return RequestInterface
+     */
     public static function get(string $uri, array $data = [], array $headers = []): RequestInterface
     {
         return self::create(HttpMethod::GET, $uri, $data, null, $headers);
     }
 
+    /**
+     * @param string $uri
+     * @param mixed|null $body
+     * @param array<string, string> $headers
+     * @return RequestInterface
+     */
     public static function post(string $uri, mixed $body = null, array $headers = []): RequestInterface
     {
         return self::create(HttpMethod::POST, $uri, [], $body, $headers);
     }
 
+    /**
+     * @param string $uri
+     * @param array<string, string> $headers
+     * @return RequestInterface
+     */
     public static function delete(string $uri, array $headers = []): RequestInterface
     {
         return self::create(HttpMethod::DELETE, $uri, [], null, $headers);
