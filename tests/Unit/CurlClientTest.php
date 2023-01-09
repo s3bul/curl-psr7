@@ -44,7 +44,7 @@ class CurlClientTest extends Unit
     public function testWhenSendRequestToWrongHostExpectThrowCurlException(): void
     {
         $curl = CurlFactory::get('https://go99rest.co.in/public/v2/users');
-        $this->tester->expectThrowable(CurlExecException::class, function() use ($curl) {
+        $this->tester->expectThrowable(CurlExecException::class, function () use ($curl) {
             $curl->exec();
         });
     }
@@ -53,6 +53,7 @@ class CurlClientTest extends Unit
     {
         $curl = CurlFactory::get(self::SERVICE_URI . '/0');
         $response = $curl->exec();
+
         $this->tester->assertEquals(HttpCode::NOT_FOUND, $response->getStatusCode());
     }
 
@@ -60,8 +61,8 @@ class CurlClientTest extends Unit
     {
         $curl = CurlFactory::get(self::SERVICE_URI);
         $response = $curl->exec();
-        $json = $response->getBody()->getContents();
 
+        $json = $response->getBody()->getContents();
         $this->tester->assertJson($json);
         $decoded = json_decode($json);
         $this->tester->assertIsArray($decoded);
@@ -74,6 +75,7 @@ class CurlClientTest extends Unit
             'per_page' => 1,
         ]);
         $response = $curl->exec();
+
         $json = $response->getBody()->getContents();
         $this->tester->assertJson($json);
         $decoded = json_decode($json);
@@ -91,8 +93,8 @@ class CurlClientTest extends Unit
             'status' => 'active',
         ])->setJwtToken(getenv('TEST_API_TOKEN'));
         $response = $curl->exec();
-        $json = $response->getBody()->getContents();
 
+        $json = $response->getBody()->getContents();
         $this->tester->assertJson($json);
         $decoded = json_decode($json);
         $this->tester->assertIsObject($decoded);
@@ -102,6 +104,23 @@ class CurlClientTest extends Unit
         $this->tester->assertIsInt($userId);
         $this->tester->assertEquals($email, $decoded->email);
         return $userId;
+    }
+
+    private function whenUpdateUserExpectEmailProperlyValue(int $userId): void
+    {
+        $email = uniqid('curl_') . '@curl.pl';
+        $curl = CurlFactory::put(self::SERVICE_URI . "/$userId", [
+            'email' => $email,
+        ])->setJwtToken(getenv('TEST_API_TOKEN'));
+        $response = $curl->exec();
+
+        $json = $response->getBody()->getContents();
+        $this->tester->assertJson($json);
+        $decoded = json_decode($json);
+        $this->tester->assertIsObject($decoded);
+        $this->tester->assertObjectHasAttribute('id', $decoded);
+        $this->tester->assertObjectHasAttribute('email', $decoded);
+        $this->tester->assertEquals($email, $decoded->email);
     }
 
     private function whenDeleteUserExpectHttpCodeIsNoContent(int $userId): void
@@ -116,6 +135,7 @@ class CurlClientTest extends Unit
     public function testWhenCreateAndDeleteUserExpectEmailAsTheSameAfterCreateAndHttpCodeIsNoContentAfterDelete(): void
     {
         $userId = $this->whenCreateUserExpectEmailAsTheSame();
+        $this->whenUpdateUserExpectEmailProperlyValue($userId);
         $this->whenDeleteUserExpectHttpCodeIsNoContent($userId);
     }
 
