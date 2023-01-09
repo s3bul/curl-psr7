@@ -84,6 +84,39 @@ class CurlClient
     }
 
     /**
+     * @param string $header
+     * @return $this
+     */
+    public function removeHeader(string $header): self
+    {
+        $this->request = $this->request->withoutHeader($header);
+        return $this;
+    }
+
+    /**
+     * @param string $header
+     * @param string $value
+     * @return $this
+     */
+    public function addHeader(string $header, string $value): self
+    {
+        $this->request = $this->request->withHeader($header, $value);
+        return $this;
+    }
+
+    /**
+     * @param array<string, string> $headers
+     * @return $this
+     */
+    public function addHeaders(array $headers): self
+    {
+        foreach ($headers as $header => $value) {
+            $this->addHeader($header, $value);
+        }
+        return $this;
+    }
+
+    /**
      * @param int|null $httpauth
      * @return $this
      */
@@ -111,8 +144,7 @@ class CurlClient
      */
     public function setJwtToken(string $token): self
     {
-        $this->request = $this->request->withHeader('Authorization', 'Bearer ' . $token);
-        return $this;
+        return $this->addHeader('Authorization', 'Bearer ' . $token);
     }
 
     /**
