@@ -95,17 +95,17 @@ class CurlClient
 
     /**
      * @param string $header
-     * @param string $value
+     * @param string|string[] $value
      * @return $this
      */
-    public function addHeader(string $header, string $value): self
+    public function addHeader(string $header, string|array $value): self
     {
         $this->request = $this->request->withHeader($header, $value);
         return $this;
     }
 
     /**
-     * @param array<string, string> $headers
+     * @param array<string, string|string[]> $headers
      * @return $this
      */
     public function addHeaders(array $headers): self
