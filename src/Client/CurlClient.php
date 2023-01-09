@@ -18,6 +18,10 @@ class CurlClient
 
     private ?CurlHandle $handle = null;
 
+    /**
+     * @param RequestInterface $request
+     * @param array $options
+     */
     public function __construct(
         public RequestInterface $request,
         public array            $options = [],
@@ -45,11 +49,24 @@ class CurlClient
 
     /**
      * @param int $option
+     * @return $this
+     */
+    public function removeOption(int $option): self
+    {
+        unset($this->options[$option]);
+        return $this;
+    }
+
+    /**
+     * @param int $option
      * @param mixed $value
      * @return $this
      */
     public function addOption(int $option, mixed $value): self
     {
+        if (is_null($value)) {
+            return $this->removeOption($option);
+        }
         $this->options[$option] = $value;
         return $this;
     }
@@ -63,6 +80,38 @@ class CurlClient
         foreach ($options as $option => $value) {
             $this->addOption($option, $value);
         }
+        return $this;
+    }
+
+    /**
+     * @param int|null $httpauth
+     * @return $this
+     */
+    public function setHttpAuth(?int $httpauth): self
+    {
+        $this->addOption(CURLOPT_HTTPAUTH, $httpauth);
+        return $this;
+    }
+
+    /**
+     * @param string $username
+     * @param string $password
+     * @return $this
+     */
+    public function setBasicAuthentication(string $username, string $password): self
+    {
+        $this->setHttpAuth(CURLAUTH_BASIC);
+        $this->addOption(CURLOPT_USERPWD, "$username:$password");
+        return $this;
+    }
+
+    /**
+     * @param string $token
+     * @return $this
+     */
+    public function setJwtToken(string $token): self
+    {
+        $this->request = $this->request->withHeader('Authorization', 'Bearer ' . $token);
         return $this;
     }
 
@@ -132,6 +181,10 @@ class CurlClient
         return $result;
     }
 
+    /**
+     * @return ResponseInterface
+     * @throws CurlExecException
+     */
     public function exec(): ResponseInterface
     {
         $this->init();
@@ -143,8 +196,8 @@ class CurlClient
             throw new CurlExecException(curl_error($this->handle), $errno);
         }
 
-        $includeHeader = ($this->getOption(CURLOPT_HEADER) ?? self::DEFAULT_OPTIONS[CURLOPT_HEADER] ?? false) && is_string($result);
-        if ($includeHeader) {
+        $hasHeader = ($this->getOption(CURLOPT_HEADER) ?? self::DEFAULT_OPTIONS[CURLOPT_HEADER] ?? false) && is_string($result);
+        if ($hasHeader) {
             $headerSize = $this->getCurlInfo(CURLINFO_HEADER_SIZE);
             $header = substr($result, 0, $headerSize);
             $body = substr($result, $headerSize);
@@ -152,7 +205,7 @@ class CurlClient
         return ResponseFactory::create(
             $body,
             $this->getCurlInfoHttpCode(),
-            $includeHeader ? $this->convertHeaderToArray($header) : [],
+            $hasHeader ? $this->convertHeaderToArray($header) : [],
             $this->getCurlInfoHttpVersion(),
         );
     }

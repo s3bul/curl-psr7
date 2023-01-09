@@ -80,9 +80,7 @@ class CurlClientTest extends Unit
             'name' => 'Curl Client',
             'gender' => 'male',
             'status' => 'active',
-        ], [
-            'Authorization' => 'Bearer ' . getenv('TEST_API_TOKEN'),
-        ]);
+        ])->setJwtToken(getenv('TEST_API_TOKEN'));
         $response = $curl->exec();
         $json = $response->getBody()->getContents();
 
@@ -99,9 +97,8 @@ class CurlClientTest extends Unit
 
     private function whenDeleteUserExpectHttpCodeIsNoContent(int $userId): void
     {
-        $curl = CurlFactory::delete(self::SERVICE_URI . "/$userId", [
-            'Authorization' => 'Bearer ' . getenv('TEST_API_TOKEN'),
-        ]);
+        $curl = CurlFactory::delete(self::SERVICE_URI . "/$userId")
+            ->setJwtToken(getenv('TEST_API_TOKEN'));
         $response = $curl->exec();
 
         $this->tester->assertEquals(HttpCode::NO_CONTENT, $response->getStatusCode());
