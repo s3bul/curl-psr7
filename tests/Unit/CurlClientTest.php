@@ -7,6 +7,7 @@ use Codeception\Test\Unit;
 use Codeception\Util\HttpCode;
 use CurlHandle;
 use GuzzleHttp\Psr7\Request;
+use S3bul\CurlPsr7\Exception\CurlExecException;
 use S3bul\CurlPsr7\Factory\CurlFactory;
 use Tests\Support\UnitTester;
 
@@ -38,6 +39,14 @@ class CurlClientTest extends Unit
         $this->tester->assertEquals(false, $curl->getOption(CURLOPT_RETURNTRANSFER));
         $this->tester->assertEquals(true, $curl->getOption(CURLOPT_SSL_VERIFYPEER));
         $this->tester->assertEquals(['Content-Type: text'], $curl->getOption(CURLOPT_HTTPHEADER));
+    }
+
+    public function testWhenSendRequestToWrongHostExpectThrowCurlException(): void
+    {
+        $curl = CurlFactory::get('https://go99rest.co.in/public/v2/users');
+        $this->tester->expectThrowable(CurlExecException::class, function() use ($curl) {
+            $curl->exec();
+        });
     }
 
     public function testWhenGetNotExistsUsersExpectHttpCodeIsNotFound(): void
