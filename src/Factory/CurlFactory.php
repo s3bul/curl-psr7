@@ -22,7 +22,7 @@ class CurlFactory
     /**
      * @param string $uri
      * @param array<string, string|int|null>|null $data
-     * @param array<string, string>|null $headers
+     * @param array<string, string|string[]>|null $headers
      * @param array<int, mixed> $options
      * @return CurlClient
      */
@@ -35,7 +35,7 @@ class CurlFactory
     /**
      * @param string $uri
      * @param mixed|null $body
-     * @param array<string, string>|null $headers
+     * @param array<string, string|string[]>|null $headers
      * @param array<int, mixed> $options
      * @return CurlClient
      */
@@ -48,7 +48,7 @@ class CurlFactory
     /**
      * @param string $uri
      * @param mixed|null $body
-     * @param array<string, string>|null $headers
+     * @param array<string, string|string[]>|null $headers
      * @param array<int, mixed> $options
      * @return CurlClient
      */
@@ -61,7 +61,7 @@ class CurlFactory
     /**
      * @param string $uri
      * @param mixed|null $body
-     * @param array<string, string>|null $headers
+     * @param array<string, string|string[]>|null $headers
      * @param array<int, mixed> $options
      * @return CurlClient
      */
@@ -73,7 +73,7 @@ class CurlFactory
 
     /**
      * @param string $uri
-     * @param array<string, string>|null $headers
+     * @param array<string, string|string[]>|null $headers
      * @param array<int, mixed> $options
      * @return CurlClient
      */

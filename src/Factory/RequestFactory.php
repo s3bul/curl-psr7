@@ -15,7 +15,7 @@ class RequestFactory extends MessageFactory
      * @param string $uri
      * @param array<string, string|int|null>|null $data
      * @param mixed|null $body
-     * @param array<string, string>|null $headers
+     * @param array<string, string|string[]>|null $headers
      * @param string|null $version
      * @return RequestInterface
      */
@@ -41,7 +41,7 @@ class RequestFactory extends MessageFactory
     /**
      * @param string $uri
      * @param array<string, string|int|null> $data
-     * @param array<string, string> $headers
+     * @param array<string, string|string[]> $headers
      * @return RequestInterface
      */
     public static function get(string $uri, array $data = [], array $headers = []): RequestInterface
@@ -52,7 +52,7 @@ class RequestFactory extends MessageFactory
     /**
      * @param string $uri
      * @param mixed|null $body
-     * @param array<string, string> $headers
+     * @param array<string, string|string[]> $headers
      * @return RequestInterface
      */
     public static function post(string $uri, mixed $body = null, array $headers = []): RequestInterface
@@ -63,7 +63,7 @@ class RequestFactory extends MessageFactory
     /**
      * @param string $uri
      * @param mixed|null $body
-     * @param array<string, string> $headers
+     * @param array<string, string|string[]> $headers
      * @return RequestInterface
      */
     public static function put(string $uri, mixed $body = null, array $headers = []): RequestInterface
@@ -74,7 +74,7 @@ class RequestFactory extends MessageFactory
     /**
      * @param string $uri
      * @param mixed|null $body
-     * @param array<string, string> $headers
+     * @param array<string, string|string[]> $headers
      * @return RequestInterface
      */
     public static function patch(string $uri, mixed $body = null, array $headers = []): RequestInterface
@@ -84,7 +84,7 @@ class RequestFactory extends MessageFactory
 
     /**
      * @param string $uri
-     * @param array<string, string> $headers
+     * @param array<string, string|string[]> $headers
      * @return RequestInterface
      */
     public static function delete(string $uri, array $headers = []): RequestInterface
