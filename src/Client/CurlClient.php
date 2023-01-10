@@ -8,6 +8,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use S3bul\CurlPsr7\Exception\CurlExecException;
 use S3bul\CurlPsr7\Factory\ResponseFactory;
+use S3bul\CurlPsr7\Util\HttpHeader;
 
 class CurlClient
 {
@@ -139,12 +140,30 @@ class CurlClient
     }
 
     /**
+     * @param string $authorization
+     * @return $this
+     */
+    public function setAuthorization(string $authorization): self
+    {
+        return $this->addHeader(HttpHeader::AUTHORIZATION, $authorization);
+    }
+
+    /**
      * @param string $token
      * @return $this
      */
     public function setJwtToken(string $token): self
     {
-        return $this->addHeader('Authorization', 'Bearer ' . $token);
+        return $this->setAuthorization('Bearer ' . $token);
+    }
+
+    /**
+     * @param string $type
+     * @return $this
+     */
+    public function setContentType(string $type): self
+    {
+        return $this->addHeader(HttpHeader::CONTENT_TYPE, $type);
     }
 
     /**
