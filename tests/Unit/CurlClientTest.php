@@ -55,7 +55,7 @@ class CurlClientTest extends Unit
     public function testWhenSendRequestToWrongHostExpectThrowCurlException(): void
     {
         $curl = CurlFactory::get('https://go99rest.co.in/public/v2/users');
-        $this->tester->expectThrowable(CurlExecException::class, function() use ($curl) {
+        $this->tester->expectThrowable(CurlExecException::class, function () use ($curl) {
             $curl->exec();
         });
     }
