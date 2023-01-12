@@ -40,8 +40,8 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
 
-    - name: Init codeception
-      run: vendor/bin/codecept bootstrap -n
+    - name: Init unit codeception templates
+      run: vendor/bin/codecept init Unit -n
 
     - name: Run phpstan
       run: vendor/bin/phpstan analyse --xdebug
