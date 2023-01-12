@@ -3,6 +3,6 @@ parameters:
   paths:
   - src
   - tests
-#  excludePaths:
-#  - tests/_output/*
-#  - tests/Support/*
+  excludePaths:
+  - tests/_output/*
+  - tests/Support/*
