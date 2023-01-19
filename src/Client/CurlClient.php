@@ -262,7 +262,7 @@ class CurlClient
             throw new CurlExecException(curl_error($this->handle), $errno);
         }
 
-        $hasHeader = ($this->getOption(CURLOPT_HEADER) ?? self::DEFAULT_OPTIONS[CURLOPT_HEADER]) && is_string($result);
+        $hasHeader = $this->getOption(CURLOPT_HEADER) && is_string($result);
         if ($hasHeader) {
             $headerSize = $this->getCurlInfo(CURLINFO_HEADER_SIZE);
             $header = substr($result, 0, $headerSize);
