@@ -1,4 +1,4 @@
-namespace: Tests
+namespace: S3bul\CurlPsr7\Tests
 support_namespace: Support
 paths:
   tests: tests
