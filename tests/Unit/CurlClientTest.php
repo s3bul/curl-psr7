@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace S3bul\Tests\CurlPsr7\Unit;
 
 use Codeception\Test\Unit;
 use Codeception\Util\HttpCode;
@@ -9,7 +9,7 @@ use CurlHandle;
 use GuzzleHttp\Psr7\Request;
 use S3bul\CurlPsr7\Exception\CurlExecException;
 use S3bul\CurlPsr7\Factory\CurlFactory;
-use Tests\Support\UnitTester;
+use S3bul\Tests\CurlPsr7\Support\UnitTester;
 
 class CurlClientTest extends Unit
 {

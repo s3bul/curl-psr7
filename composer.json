@@ -1,7 +1,7 @@
 {
   "name": "s3bul/curl-psr7",
   "description": "Curl client with PSR-7 for PHP",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "keywords": [
     "PHP",
     "cURL",
@@ -38,7 +38,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Tests\\": "tests/"
+      "S3bul\\Tests\\CurlPsr7\\": "tests/"
     }
   },
   "scripts": {

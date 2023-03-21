@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Support;
+namespace S3bul\Tests\CurlPsr7\Support;
 
 /**
  * Inherited Methods
