@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace S3bul\Tests\CurlPsr7\Unit;
+namespace S3bul\CurlPsr7\Tests\Unit;
 
 use Codeception\Test\Unit;
 use Codeception\Util\HttpCode;
@@ -9,7 +9,7 @@ use CurlHandle;
 use GuzzleHttp\Psr7\Request;
 use S3bul\CurlPsr7\Exception\CurlExecException;
 use S3bul\CurlPsr7\Factory\CurlFactory;
-use S3bul\Tests\CurlPsr7\Support\UnitTester;
+use S3bul\CurlPsr7\Tests\Support\UnitTester;
 
 class CurlClientTest extends Unit
 {
@@ -101,8 +101,8 @@ class CurlClientTest extends Unit
     private function testUserObject(mixed $user, string $email = null): void
     {
         $this->tester->assertIsObject($user);
-        $this->tester->assertObjectHasAttribute('id', $user);
-        $this->tester->assertObjectHasAttribute('email', $user);
+        $this->tester->assertTrue(property_exists($user, 'id'));
+        $this->tester->assertTrue(property_exists($user, 'email'));
         $this->tester->assertIsInt($user->id);
         $this->tester->assertIsString($user->email);
         if (!is_null($email)) {
