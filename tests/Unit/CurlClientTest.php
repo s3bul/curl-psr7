@@ -13,17 +13,18 @@ use S3bul\CurlPsr7\Tests\Support\UnitTester;
 
 class CurlClientTest extends Unit
 {
-    const SERVICE_URI = 'https://gorest.co.in/public/v2/users';
+    private string $testApiUri;
 
     protected UnitTester $tester;
 
     protected function _before(): void
     {
+        $this->testApiUri = getenv('TEST_API_URI');
     }
 
     public function testWhenCreateClientExpectProperlyTypesAndValues(): void
     {
-        $curl = CurlFactory::get(self::SERVICE_URI, [
+        $curl = CurlFactory::get($this->testApiUri, [
             'per_page' => 1,
         ], [
             'Content-Language' => 'pl-PL',
@@ -38,7 +39,7 @@ class CurlClientTest extends Unit
 
         $this->tester->assertInstanceOf(Request::class, $curl->request);
         $this->tester->assertInstanceOf(CurlHandle::class, $curl->getHandle());
-        $this->tester->assertEquals(self::SERVICE_URI, strval($curl->request->getUri()->withQuery('')));
+        $this->tester->assertEquals($this->testApiUri, strval($curl->request->getUri()->withQuery('')));
         $this->tester->assertEquals('per_page=1', $curl->request->getUri()->getQuery());
         $this->tester->assertEquals('pl-PL', $curl->request->getHeaderLine('Content-Language'));
         $this->tester->assertEquals('text/html', $curl->request->getHeaderLine('Content-Type'));
@@ -54,7 +55,7 @@ class CurlClientTest extends Unit
 
     public function testWhenSendRequestToWrongHostExpectThrowCurlException(): void
     {
-        $curl = CurlFactory::get('https://go99rest.co.in/public/v2/users');
+        $curl = CurlFactory::get('exception' . $this->testApiUri);
         $this->tester->expectThrowable(CurlExecException::class, function () use ($curl) {
             $curl->exec();
         });
@@ -62,7 +63,7 @@ class CurlClientTest extends Unit
 
     public function testWhenGetNotExistsUsersExpectHttpCodeIsNotFound(): void
     {
-        $curl = CurlFactory::get(self::SERVICE_URI . '/0');
+        $curl = CurlFactory::get($this->testApiUri . '/0');
         $response = $curl->exec();
 
         $this->tester->assertEquals(HttpCode::NOT_FOUND, $response->getStatusCode());
@@ -70,7 +71,7 @@ class CurlClientTest extends Unit
 
     public function testWhenGetUsersExpectJsonStructure(): void
     {
-        $curl = CurlFactory::get(self::SERVICE_URI);
+        $curl = CurlFactory::get($this->testApiUri);
         $response = $curl->exec();
 
         $json = $response->getBody()->getContents();
@@ -84,7 +85,7 @@ class CurlClientTest extends Unit
      */
     private function getListWithOneUser(): array
     {
-        $curl = CurlFactory::get(self::SERVICE_URI, [
+        $curl = CurlFactory::get($this->testApiUri, [
             'page' => 1,
             'per_page' => 1,
         ]);
@@ -130,7 +131,7 @@ class CurlClientTest extends Unit
     public function testWhenCreateUserExpectProperlyTypesAndValues(): void
     {
         $email = uniqid('curl_') . '@curl.pl';
-        $curl = CurlFactory::post(self::SERVICE_URI, [
+        $curl = CurlFactory::post($this->testApiUri, [
             'email' => $email,
             'name' => 'Curl Client',
             'gender' => 'male',
@@ -148,7 +149,7 @@ class CurlClientTest extends Unit
     {
         $user = $this->getOneUser();
         $email = uniqid('curl_') . '@curl.pl';
-        $curl = CurlFactory::put(self::SERVICE_URI . "/$user->id", [
+        $curl = CurlFactory::put($this->testApiUri . "/$user->id", [
             'email' => $email,
         ])->setJwtToken(getenv('TEST_API_TOKEN'));
         $response = $curl->exec();
@@ -162,7 +163,7 @@ class CurlClientTest extends Unit
     public function testWhenDeleteUserExpectHttpCodeIsNoContent(): void
     {
         $user = $this->getOneUser();
-        $curl = CurlFactory::delete(self::SERVICE_URI . "/$user->id")
+        $curl = CurlFactory::delete($this->testApiUri . "/$user->id")
             ->setJwtToken(getenv('TEST_API_TOKEN'));
         $response = $curl->exec();
 

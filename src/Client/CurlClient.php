@@ -17,7 +17,7 @@ class CurlClient
         CURLOPT_HEADER => true,
     ];
 
-    private ?CurlHandle $handle = null;
+    private CurlHandle $handle;
 
     /**
      * @param RequestInterface $request
@@ -32,9 +32,9 @@ class CurlClient
     }
 
     /**
-     * @return CurlHandle|null
+     * @return CurlHandle
      */
-    public function getHandle(): ?CurlHandle
+    public function getHandle(): CurlHandle
     {
         return $this->handle;
     }
@@ -180,7 +180,7 @@ class CurlClient
      */
     private function getCurlInfoHttpCode(): int
     {
-        return $this->getCurlInfo(CURLINFO_HTTP_CODE);
+        return intval($this->getCurlInfo(CURLINFO_HTTP_CODE));
     }
 
     /**
@@ -188,7 +188,7 @@ class CurlClient
      */
     private function getCurlInfoHttpVersion(): int
     {
-        return $this->getCurlInfo(CURLINFO_HTTP_VERSION);
+        return intval($this->getCurlInfo(CURLINFO_HTTP_VERSION));
     }
 
     /**
@@ -238,9 +238,11 @@ class CurlClient
         foreach ($headers as $row) {
             if (preg_match('/^\S+:/', $row) === 1) {
                 $strPos = strpos($row, ':');
-                $name = substr($row, 0, $strPos);
-                $value = substr($row, $strPos + 1);
-                $result[$name] = $value;
+                if ($strPos !== false) {
+                    $name = substr($row, 0, $strPos);
+                    $value = substr($row, $strPos + 1);
+                    $result[$name] = $value;
+                }
             }
         }
 
@@ -264,14 +266,14 @@ class CurlClient
 
         $hasHeader = $this->getOption(CURLOPT_HEADER) && is_string($result);
         if ($hasHeader) {
-            $headerSize = $this->getCurlInfo(CURLINFO_HEADER_SIZE);
+            $headerSize = intval($this->getCurlInfo(CURLINFO_HEADER_SIZE));
             $header = substr($result, 0, $headerSize);
             $body = substr($result, $headerSize);
         }
         return ResponseFactory::create(
             $body,
             $this->getCurlInfoHttpCode(),
-            $hasHeader ? $this->convertHeaderToArray($header) : [],
+            $hasHeader ? $this->convertHeaderToArray(strval($header)) : [],
             $this->getCurlInfoHttpVersion(),
         );
     }
