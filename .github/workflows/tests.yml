@@ -2,7 +2,7 @@ name: Tests
 
 on:
   push:
-    branches: [ "master", "development" ]
+    branches: [ "master", "development", "fix/phpstan" ]
   pull_request:
 
 permissions:
