@@ -192,6 +192,14 @@ class CurlClient
     }
 
     /**
+     * @return int
+     */
+    private function getCurlInfoHeaderSize(): int
+    {
+        return intval($this->getCurlInfo(CURLINFO_HEADER_SIZE));
+    }
+
+    /**
      * @return string[]
      */
     private function convertHeaderToCurlOpt(): array
@@ -250,6 +258,39 @@ class CurlClient
     }
 
     /**
+     * @param string|bool $response
+     * @return string|null
+     */
+    private function getResponseBody(string|bool $response): ?string
+    {
+        $result = null;
+        if (is_string($response)) {
+            $result = $this->getOption(CURLOPT_HEADER) ?
+                (substr($response, $this->getCurlInfoHeaderSize()) ?: null) :
+                $response;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string|bool $response
+     * @return array<string, string>|null
+     */
+    private function getResponseHeader(string|bool $response): ?array
+    {
+        $result = null;
+        if (is_string($response)) {
+            $result = $this->getOption(CURLOPT_HEADER) ?
+                $this->convertHeaderToArray(
+                    substr($response, 0, $this->getCurlInfoHeaderSize()) ?: ''
+                ) : [];
+        }
+
+        return $result;
+    }
+
+    /**
      * @return ResponseInterface
      * @throws CurlExecException
      */
@@ -257,23 +298,17 @@ class CurlClient
     {
         $this->init();
 
-        $result = $header = $body = curl_exec($this->handle);
+        $result = curl_exec($this->handle);
 
         $errno = curl_errno($this->handle);
         if ($errno !== 0) {
             throw new CurlExecException(curl_error($this->handle), $errno);
         }
 
-        $hasHeader = $this->getOption(CURLOPT_HEADER) && is_string($result);
-        if ($hasHeader) {
-            $headerSize = intval($this->getCurlInfo(CURLINFO_HEADER_SIZE));
-            $header = substr($result, 0, $headerSize);
-            $body = substr($result, $headerSize);
-        }
         return ResponseFactory::create(
-            $body,
+            $this->getResponseBody($result),
             $this->getCurlInfoHttpCode(),
-            $hasHeader ? $this->convertHeaderToArray(strval($header)) : [],
+            $this->getResponseHeader($result),
             $this->getCurlInfoHttpVersion(),
         );
     }

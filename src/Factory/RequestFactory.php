@@ -6,15 +6,29 @@ namespace S3bul\CurlPsr7\Factory;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UriInterface;
 use S3bul\CurlPsr7\Util\HttpMethod;
 
 class RequestFactory extends MessageFactory
 {
     /**
+     * @param string $uri
+     * @param array<string, string|int|null>|null $data
+     * @return UriInterface|string
+     */
+    private static function createUri(string $uri, ?array $data): UriInterface|string
+    {
+        /** @var array<string, string|null> $_data */
+        $_data = $data ?? [];
+        return count($_data) > 0 ? Uri::withQueryValues(new Uri($uri), $_data) : $uri;
+    }
+
+    /**
      * @param string $method
      * @param string $uri
      * @param array<string, string|int|null>|null $data
-     * @param mixed|null $body
+     * @param StreamInterface|resource|array<string, string>|string|null $body
      * @param array<string, string|string[]>|null $headers
      * @param string|null $version
      * @return RequestInterface
@@ -28,10 +42,9 @@ class RequestFactory extends MessageFactory
         string $version = null,
     ): RequestInterface
     {
-        $_data = $data ?? [];
         return new Request(
             $method,
-            count($_data) > 0 ? Uri::withQueryValues(new Uri($uri), $_data) : $uri,
+            self::createUri($uri, $data),
             $headers ?? [],
             is_array($body) ? http_build_query($body) : $body,
             self::getHttpVersion($version),
@@ -51,7 +64,7 @@ class RequestFactory extends MessageFactory
 
     /**
      * @param string $uri
-     * @param mixed|null $body
+     * @param StreamInterface|resource|array<string, string>|string|null $body
      * @param array<string, string|string[]> $headers
      * @return RequestInterface
      */
@@ -62,7 +75,7 @@ class RequestFactory extends MessageFactory
 
     /**
      * @param string $uri
-     * @param mixed|null $body
+     * @param StreamInterface|resource|array<string, string>|string|null $body
      * @param array<string, string|string[]> $headers
      * @return RequestInterface
      */
@@ -73,7 +86,7 @@ class RequestFactory extends MessageFactory
 
     /**
      * @param string $uri
-     * @param mixed|null $body
+     * @param StreamInterface|resource|array<string, string>|string|null $body
      * @param array<string, string|string[]> $headers
      * @return RequestInterface
      */

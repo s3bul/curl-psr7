@@ -14,14 +14,19 @@ use S3bul\CurlPsr7\Tests\Support\UnitTester;
 class CurlClientTest extends Unit
 {
     private string $testApiUri;
+    private string $testApiToken;
 
     protected UnitTester $tester;
 
     protected function _before(): void
     {
-        $this->testApiUri = getenv('TEST_API_URI');
+        $this->testApiUri = getenv('TEST_API_URI') ?: '';
+        $this->testApiToken = getenv('TEST_API_TOKEN') ?: '';
     }
 
+    /**
+     * @throws CurlExecException
+     */
     public function testWhenCreateClientExpectProperlyTypesAndValues(): void
     {
         $curl = CurlFactory::get($this->testApiUri, [
@@ -61,6 +66,9 @@ class CurlClientTest extends Unit
         });
     }
 
+    /**
+     * @throws CurlExecException
+     */
     public function testWhenGetNotExistsUsersExpectHttpCodeIsNotFound(): void
     {
         $curl = CurlFactory::get($this->testApiUri . '/0');
@@ -69,6 +77,9 @@ class CurlClientTest extends Unit
         $this->tester->assertEquals(HttpCode::NOT_FOUND, $response->getStatusCode());
     }
 
+    /**
+     * @throws CurlExecException
+     */
     public function testWhenGetUsersExpectJsonStructure(): void
     {
         $curl = CurlFactory::get($this->testApiUri);
@@ -82,6 +93,7 @@ class CurlClientTest extends Unit
 
     /**
      * @return object[]
+     * @throws CurlExecException
      */
     private function getListWithOneUser(): array
     {
@@ -112,22 +124,30 @@ class CurlClientTest extends Unit
     }
 
     /**
-     * @return object
+     * @return object{'id': int}
+     * @throws CurlExecException
      */
     private function getOneUser(): object
     {
         $decoded = $this->getListWithOneUser();
-        $firsElement = reset($decoded) ?: null;
+        /** @var object{'id': int} $firsElement */
+        $firsElement = reset($decoded);
         $this->testUserObject($firsElement);
 
         return $firsElement;
     }
 
+    /**
+     * @throws CurlExecException
+     */
     public function testWhenGetUsersWithFilterExpectJsonStructureAndOneElement(): void
     {
         $this->getListWithOneUser();
     }
 
+    /**
+     * @throws CurlExecException
+     */
     public function testWhenCreateUserExpectProperlyTypesAndValues(): void
     {
         $email = uniqid('curl_') . '@curl.pl';
@@ -136,7 +156,7 @@ class CurlClientTest extends Unit
             'name' => 'Curl Client',
             'gender' => 'male',
             'status' => 'active',
-        ])->setJwtToken(getenv('TEST_API_TOKEN'));
+        ])->setJwtToken($this->testApiToken);
         $response = $curl->exec();
 
         $json = $response->getBody()->getContents();
@@ -145,13 +165,16 @@ class CurlClientTest extends Unit
         $this->testUserObject($decoded, $email);
     }
 
+    /**
+     * @throws CurlExecException
+     */
     public function testWhenUpdateUserExpectEmailProperlyValue(): void
     {
         $user = $this->getOneUser();
         $email = uniqid('curl_') . '@curl.pl';
         $curl = CurlFactory::put($this->testApiUri . "/$user->id", [
             'email' => $email,
-        ])->setJwtToken(getenv('TEST_API_TOKEN'));
+        ])->setJwtToken($this->testApiToken);
         $response = $curl->exec();
 
         $json = $response->getBody()->getContents();
@@ -160,11 +183,14 @@ class CurlClientTest extends Unit
         $this->testUserObject($decoded, $email);
     }
 
+    /**
+     * @throws CurlExecException
+     */
     public function testWhenDeleteUserExpectHttpCodeIsNoContent(): void
     {
         $user = $this->getOneUser();
         $curl = CurlFactory::delete($this->testApiUri . "/$user->id")
-            ->setJwtToken(getenv('TEST_API_TOKEN'));
+            ->setJwtToken($this->testApiToken);
         $response = $curl->exec();
 
         $this->tester->assertEquals(HttpCode::NO_CONTENT, $response->getStatusCode());
