@@ -130,7 +130,7 @@ class CurlClientTest extends Unit
     }
 
     /**
-     * @return object{'id': int}
+     * @return object{id: int}
      * @throws CurlExecException
      */
     private function getOneUser(): object
