@@ -92,7 +92,7 @@ class CurlClientTest extends Unit
     }
 
     /**
-     * @return object[]
+     * @return array<object{id: int, email: string}>
      * @throws CurlExecException
      */
     private function getListWithOneUser(): array
@@ -105,12 +105,18 @@ class CurlClientTest extends Unit
 
         $json = $response->getBody()->getContents();
         $this->tester->assertJson($json);
+        /** @var array<object{id: int, email: string}> $decoded */
         $decoded = json_decode($json);
         $this->tester->assertIsArray($decoded);
         $this->tester->assertCount(1, $decoded);
         return $decoded;
     }
 
+    /**
+     * @param object{id: int, email: string} $user
+     * @param string|null $email
+     * @return void
+     */
     private function testUserObject(mixed $user, string $email = null): void
     {
         $this->tester->assertIsObject($user);
@@ -129,9 +135,7 @@ class CurlClientTest extends Unit
      */
     private function getOneUser(): object
     {
-        $decoded = $this->getListWithOneUser();
-        /** @var object{'id': int} $firsElement */
-        $firsElement = reset($decoded);
+        [$firsElement] = $this->getListWithOneUser();
         $this->testUserObject($firsElement);
 
         return $firsElement;
@@ -161,6 +165,7 @@ class CurlClientTest extends Unit
 
         $json = $response->getBody()->getContents();
         $this->tester->assertJson($json);
+        /** @var object{id: int, email: string} $decoded */
         $decoded = json_decode($json);
         $this->testUserObject($decoded, $email);
     }
@@ -179,6 +184,7 @@ class CurlClientTest extends Unit
 
         $json = $response->getBody()->getContents();
         $this->tester->assertJson($json);
+        /** @var object{id: int, email: string} $decoded */
         $decoded = json_decode($json);
         $this->testUserObject($decoded, $email);
     }
