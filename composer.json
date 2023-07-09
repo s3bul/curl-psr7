@@ -1,7 +1,7 @@
 {
   "name": "s3bul/curl-psr7",
   "description": "Curl client with PSR-7 for PHP",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "keywords": [
     "PHP",
     "cURL",
@@ -20,7 +20,7 @@
   "require": {
     "php": "^8.2",
     "ext-curl": "*",
-    "guzzlehttp/psr7": "^2.4"
+    "guzzlehttp/psr7": "^2.5"
   },
   "require-dev": {
     "codeception/codeception": "^5.0",

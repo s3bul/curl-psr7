@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace S3bul\CurlPsr7\Factory;
 
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\StreamInterface;
 use S3bul\CurlPsr7\Client\CurlClient;
 
 class CurlFactory
@@ -34,7 +35,7 @@ class CurlFactory
 
     /**
      * @param string $uri
-     * @param mixed|null $body
+     * @param StreamInterface|resource|array<string, string>|string|null $body
      * @param array<string, string|string[]>|null $headers
      * @param array<int, mixed> $options
      * @return CurlClient
@@ -47,7 +48,7 @@ class CurlFactory
 
     /**
      * @param string $uri
-     * @param mixed|null $body
+     * @param StreamInterface|resource|array<string, string>|string|null $body
      * @param array<string, string|string[]>|null $headers
      * @param array<int, mixed> $options
      * @return CurlClient
@@ -60,7 +61,7 @@ class CurlFactory
 
     /**
      * @param string $uri
-     * @param mixed|null $body
+     * @param StreamInterface|resource|array<string, string>|string|null $body
      * @param array<string, string|string[]>|null $headers
      * @param array<int, mixed> $options
      * @return CurlClient

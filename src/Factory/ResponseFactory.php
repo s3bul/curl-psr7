@@ -6,12 +6,13 @@ namespace S3bul\CurlPsr7\Factory;
 
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 
 class ResponseFactory extends MessageFactory
 {
 
     /**
-     * @param mixed|null $body
+     * @param StreamInterface|resource|string|null $body
      * @param int $status
      * @param array<string, string>|null $headers
      * @param string|int|null $version

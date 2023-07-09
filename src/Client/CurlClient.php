@@ -17,7 +17,7 @@ class CurlClient
         CURLOPT_HEADER => true,
     ];
 
-    private ?CurlHandle $handle = null;
+    private CurlHandle $handle;
 
     /**
      * @param RequestInterface $request
@@ -32,9 +32,9 @@ class CurlClient
     }
 
     /**
-     * @return CurlHandle|null
+     * @return CurlHandle
      */
-    public function getHandle(): ?CurlHandle
+    public function getHandle(): CurlHandle
     {
         return $this->handle;
     }
@@ -180,7 +180,7 @@ class CurlClient
      */
     private function getCurlInfoHttpCode(): int
     {
-        return $this->getCurlInfo(CURLINFO_HTTP_CODE);
+        return intval($this->getCurlInfo(CURLINFO_HTTP_CODE));
     }
 
     /**
@@ -188,7 +188,15 @@ class CurlClient
      */
     private function getCurlInfoHttpVersion(): int
     {
-        return $this->getCurlInfo(CURLINFO_HTTP_VERSION);
+        return intval($this->getCurlInfo(CURLINFO_HTTP_VERSION));
+    }
+
+    /**
+     * @return int
+     */
+    private function getCurlInfoHeaderSize(): int
+    {
+        return intval($this->getCurlInfo(CURLINFO_HEADER_SIZE));
     }
 
     /**
@@ -238,10 +246,45 @@ class CurlClient
         foreach ($headers as $row) {
             if (preg_match('/^\S+:/', $row) === 1) {
                 $strPos = strpos($row, ':');
-                $name = substr($row, 0, $strPos);
-                $value = substr($row, $strPos + 1);
-                $result[$name] = $value;
+                if ($strPos !== false) {
+                    $name = substr($row, 0, $strPos);
+                    $value = substr($row, $strPos + 1);
+                    $result[$name] = $value;
+                }
             }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string|bool $response
+     * @return string|null
+     */
+    private function getResponseBody(string|bool $response): ?string
+    {
+        $result = null;
+        if (is_string($response)) {
+            $result = $this->getOption(CURLOPT_HEADER) ?
+                (substr($response, $this->getCurlInfoHeaderSize()) ?: null) :
+                $response;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string|bool $response
+     * @return array<string, string>|null
+     */
+    private function getResponseHeader(string|bool $response): ?array
+    {
+        $result = null;
+        if (is_string($response)) {
+            $result = $this->getOption(CURLOPT_HEADER) ?
+                $this->convertHeaderToArray(
+                    substr($response, 0, $this->getCurlInfoHeaderSize()) ?: ''
+                ) : [];
         }
 
         return $result;
@@ -255,23 +298,17 @@ class CurlClient
     {
         $this->init();
 
-        $result = $header = $body = curl_exec($this->handle);
+        $result = curl_exec($this->handle);
 
         $errno = curl_errno($this->handle);
         if ($errno !== 0) {
             throw new CurlExecException(curl_error($this->handle), $errno);
         }
 
-        $hasHeader = $this->getOption(CURLOPT_HEADER) && is_string($result);
-        if ($hasHeader) {
-            $headerSize = $this->getCurlInfo(CURLINFO_HEADER_SIZE);
-            $header = substr($result, 0, $headerSize);
-            $body = substr($result, $headerSize);
-        }
         return ResponseFactory::create(
-            $body,
+            $this->getResponseBody($result),
             $this->getCurlInfoHttpCode(),
-            $hasHeader ? $this->convertHeaderToArray($header) : [],
+            $this->getResponseHeader($result),
             $this->getCurlInfoHttpVersion(),
         );
     }
